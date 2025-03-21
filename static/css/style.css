@@ -5,6 +5,10 @@
     --white: #ffffff;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    --success-color: #4caf50;
+    --info-color: #2196f3;
 }
 
 * {
@@ -297,4 +301,227 @@ body {
 .action-button.playing {
     animation: pulse-button 1s infinite;
     background-color: #34a853;
+}
+
+/* Markdown content styling */
+.markdown-content {
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+.markdown-content h1 {
+    font-size: 20px;
+}
+
+.markdown-content h2 {
+    font-size: 18px;
+}
+
+.markdown-content h3 {
+    font-size: 16px;
+}
+
+.markdown-content p {
+    margin-bottom: 12px;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+    margin-left: 20px;
+    margin-bottom: 12px;
+}
+
+.markdown-content li {
+    margin-bottom: 4px;
+}
+
+.markdown-content code {
+    background-color: #f0f0f0;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 13px;
+}
+
+.markdown-content pre {
+    background-color: #f0f0f0;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 16px;
+}
+
+.markdown-content pre code {
+    background-color: transparent;
+    padding: 0;
+}
+
+.markdown-content blockquote {
+    border-left: 4px solid var(--primary-color);
+    padding-left: 12px;
+    margin-left: 0;
+    color: #666;
+    font-style: italic;
+    margin-bottom: 12px;
+}
+
+.markdown-content a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.markdown-content a:hover {
+    text-decoration: underline;
+}
+
+.markdown-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.markdown-content table th {
+    background-color: #f5f5f5;
+    font-weight: bold;
+}
+
+.markdown-content table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Toast notifications */
+.toast-container {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 400px;
+}
+
+.toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 250px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: var(--white);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
+    opacity: 0;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.toast.show {
+    transform: translateX(0);
+    opacity: 1;
+}
+
+.toast-error {
+    background-color: var(--error-color);
+}
+
+.toast-warning {
+    background-color: var(--warning-color);
+}
+
+.toast-success {
+    background-color: var(--success-color);
+}
+
+.toast-info {
+    background-color: var(--info-color);
+}
+
+.toast-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+}
+
+.toast-icon svg {
+    width: 100%;
+    height: 100%;
+    fill: var(--white);
+}
+
+.toast-message {
+    flex-grow: 1;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.toast-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.toast-close:hover {
+    opacity: 1;
+}
+
+.toast-close svg {
+    width: 16px;
+    height: 16px;
+    fill: var(--white);
+}
+
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.toast-progress-bar {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5);
+    transform-origin: left;
+}
+
+/* Toast progress bar animation */
+@keyframes shrink {
+    0% {
+        transform: scaleX(1);
+    }
+    100% {
+        transform: scaleX(0);
+    }
 } 

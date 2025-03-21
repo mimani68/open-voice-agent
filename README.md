@@ -10,9 +10,10 @@ A virtual voice assistant application that allows users to interact using their 
 
 - Real-time voice recording
 - Speech-to-text transcription
-- AI-generated responses
+- AI-generated responses with Markdown formatting
 - Text-to-speech conversion
 - Visual feedback with loading animations
+- Toast notifications for errors and status updates
 - Audio playback controls:
   - Play/pause audio playback
   - Skip forward 10 seconds
@@ -75,14 +76,37 @@ POLLY_SAMPLE_RATE=24000
 2. Click on the microphone icon to start speaking
 3. The application will:
    - Transcribe your speech
-   - Generate an AI response
-   - Convert the response to speech
-   - Display both the transcription and response text
+   - Generate an AI response with Markdown formatting
+   - Convert the response to speech (stripping Markdown for natural narration)
+   - Display both the transcription and formatted response text
 4. Audio playback controls:
    - Use the play/pause button to control audio playback
    - Skip forward or backward 10 seconds using skip controls
    - Click "Replay Voice" to restart the audio response from the beginning
    - Audio progress and duration are displayed during playback
+
+## Markdown Support
+
+The assistant's responses are formatted using Markdown, providing better readability and organization with:
+
+- **Headings** for structured information
+- **Lists** (bulleted and numbered) for sequential information
+- **Emphasis** (bold and italic) for important points
+- **Code blocks** for code examples or commands
+- **Links** for references to web resources
+- **Tables** for tabular data
+- **Blockquotes** for quotations or callouts
+
+## Error Handling
+
+The application provides comprehensive error handling with visual toast notifications:
+
+- **Error notifications** (red): Display when critical errors occur, such as microphone access issues, API failures, or audio playback problems
+- **Warning notifications** (yellow): Show for non-critical issues like short recordings or auto-play restrictions
+- **Success notifications** (green): Appear when processes complete successfully
+- **Info notifications** (blue): Provide helpful information about application state
+
+Notifications automatically dismiss after 5 seconds but can also be closed manually. All errors are also logged to the browser console for debugging.
 
 ## License
 

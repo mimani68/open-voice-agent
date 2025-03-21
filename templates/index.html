@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Virtual Voice Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Add marked.js for Markdown parsing -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+    <!-- Toast notification container -->
+    <div id="toastContainer" class="toast-container"></div>
+    
     <div class="container">
         <div class="assistant-container">
             <div class="assistant-circle" id="assistantCircle">
@@ -34,7 +39,7 @@
                 </div>
                 <div class="transcript-box">
                     <h3>Assistant response:</h3>
-                    <p id="responseText"></p>
+                    <div id="responseText" class="markdown-content"></div>
                 </div>
                 <div class="audio-controls">
                     <div class="playback-controls">
