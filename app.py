@@ -1,11 +1,9 @@
 import os
 from flask import Flask, render_template, request, jsonify, session
-import boto3
 import base64
 import tempfile
 import re
 import traceback
-from botocore.exceptions import ClientError
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -17,20 +15,10 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 openai_api_key = os.environ.get("OPENAI_API_KEY", "your-openai-api-key")
 client = OpenAI(api_key=openai_api_key)
 
-aws_access_key = os.environ.get("AWS_ACCESS_KEY_ID", "your-aws-access-key")
-aws_secret_key = os.environ.get("AWS_SECRET_ACCESS_KEY", "your-aws-secret-key")
-aws_region = os.environ.get("AWS_REGION", "us-east-1")
-
-polly_engine = os.environ.get("POLLY_ENGINE", "neural")
-polly_voice_id = os.environ.get("POLLY_VOICE_ID", "Joanna")
-polly_sample_rate = os.environ.get("POLLY_SAMPLE_RATE", "24000")
-
-polly_client = boto3.client(
-    'polly',
-    aws_access_key_id=aws_access_key,
-    aws_secret_access_key=aws_secret_key,
-    region_name=aws_region
-)
+# OpenAI TTS configuration
+tts_model = os.environ.get("OPENAI_TTS_MODEL", "tts-1")  # or "tts-1-hd" for higher quality
+tts_voice = os.environ.get("OPENAI_TTS_VOICE", "alloy")  # alloy, echo, fable, onyx, nova, shimmer
+tts_format = os.environ.get("OPENAI_TTS_FORMAT", "mp3")  # mp3, opus, aac, flac
 
 def strip_markdown(text):
     text = re.sub(r'```[\s\S]*?```', 'Code block removed for speech.', text)
@@ -108,7 +96,7 @@ def process_audio():
             
             messages = [{
                 "role": "system", 
-                "content": "You are a helpful virtual voice assistant. Format your responses using Markdown syntax for better readability. The answer must be straight forward and to the point and like a person talking fluently and naturally. It should not be a question. It should be a single sentence or a few sentences. Answers must be concise and based on real and valid statistics."
+                "content": "You are a helpful natural and warm voice assistants. Format your responses using Markdown syntax for better readability. The answer must be straight forward and to the point and like a person talking fluently and naturally. It should not be a question. Using US English IDIOM and slang is prefers."
             }]
             messages.extend(conversation_history)
             messages.append({"role": "user", "content": transcribed_text})
@@ -131,36 +119,38 @@ def process_audio():
             {"role": "assistant", "content": ai_response}
         ])
         
+        # FIX: update history length
         session['conversation_history'] = conversation_history[-20:]
         
         speech_text = strip_markdown(ai_response)
         
         try:
-            polly_response = polly_client.synthesize_speech(
-                Engine=polly_engine,
-                Text=speech_text,
-                OutputFormat='mp3',
-                VoiceId=polly_voice_id,
-                SampleRate=polly_sample_rate,
-                TextType='text'
+            # Use OpenAI's TTS API
+            tts_response = client.audio.speech.create(
+                model=tts_model,
+                voice=tts_voice,
+                input=speech_text,
+                response_format=tts_format
             )
-        except ClientError as e:
-            error_code = e.response.get('Error', {}).get('Code')
-            error_message = e.response.get('Error', {}).get('Message')
-            print(f"Polly error: {error_code} - {error_message}")
+            
+            # Get the audio content
+            audio_content = tts_response.content
+            
+        except Exception as e:
+            print(f"OpenAI TTS error: {str(e)}")
             return jsonify({
                 'success': False,
-                'error': f'Text-to-speech failed: {error_message}'
+                'error': f'Text-to-speech failed: {str(e)}'
             }), 500
         
-        audio_stream = polly_response['AudioStream'].read()
-        encoded_audio = base64.b64encode(audio_stream).decode('utf-8')
+        encoded_audio = base64.b64encode(audio_content).decode('utf-8')
         
         return jsonify({
             'success': True,
             'transcribed_text': transcribed_text,
             'response_text': ai_response,
-            'audio': f'data:audio/mp3;base64,{encoded_audio}'
+            'usage': response.model_extra['estimated_cost'] if 'estimated_cost' in response.model_extra else {},
+            'audio': f'data:audio/{tts_format};base64,{encoded_audio}'
         })
         
     except Exception as e:

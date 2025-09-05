@@ -55,21 +55,6 @@ A virtual voice assistant application that allows users to interact using their 
 
 Create a `.env` file in the root directory with the following variables:
 
-```
-# OpenAI API Key
-OPENAI_API_KEY=your-openai-api-key
-
-# AWS Credentials
-AWS_ACCESS_KEY_ID=your-aws-access-key
-AWS_SECRET_ACCESS_KEY=your-aws-secret-key
-AWS_REGION=us-east-1
-
-# Polly Configuration
-POLLY_ENGINE=neural
-POLLY_VOICE_ID=Joanna
-POLLY_SAMPLE_RATE=24000
-```
-
 ## Usage
 
 1. Open the application in your browser

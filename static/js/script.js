@@ -1,5 +1,6 @@
 class VoiceAssistant {
     constructor() {
+        this.MAX_RECORD_TIME = 80
         this.assistantCircle = document.getElementById('assistantCircle');
         this.micIcon = document.getElementById('micIcon');
         this.waveIcon = document.getElementById('waveIcon');
@@ -187,9 +188,9 @@ class VoiceAssistant {
             setTimeout(() => {
                 if (this.isRecording) {
                     this.stopRecording();
-                    this.showToast("Maximum recording time reached (45 seconds). Processing your request.", "info");
+                    this.showToast(`Maximum recording time reached (${this.MAX_RECORD_TIME} seconds). Processing your request.`, "info");
                 }
-            }, 45000);
+            }, this.MAX_RECORD_TIME * 1000);
             
         } catch (error) {
             console.error('Error accessing microphone:', error);
@@ -254,6 +255,7 @@ class VoiceAssistant {
                     const data = await response.json();
                     
                     if (data.success) {
+                        console.log("Usage:", data?.usage)
                         this.transcriptText.textContent = data.transcribed_text;
                         this.responseText.innerHTML = marked.parse(data.response_text);
                         this.transcriptContainer.classList.remove('hidden');
