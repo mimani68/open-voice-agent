@@ -20,6 +20,8 @@ tts_model = os.environ.get("OPENAI_TTS_MODEL", "tts-1")  # or "tts-1-hd" for hig
 tts_voice = os.environ.get("OPENAI_TTS_VOICE", "alloy")  # alloy, echo, fable, onyx, nova, shimmer
 tts_format = os.environ.get("OPENAI_TTS_FORMAT", "mp3")  # mp3, opus, aac, flac
 
+llm_model=os.environ.get("OPENAI_LLM_MODEL", "gpt-4.1-nano")
+
 def strip_markdown(text):
     text = re.sub(r'```[\s\S]*?```', 'Code block removed for speech.', text)
     text = re.sub(r'`([^`]+)`', r'\1', text)
@@ -102,7 +104,7 @@ def process_audio():
             messages.append({"role": "user", "content": transcribed_text})
 
             response = client.chat.completions.create(
-                model="gpt-4o-mini",
+                model=llm_model,
                 messages=messages
             )
         except Exception as e:
@@ -149,7 +151,10 @@ def process_audio():
             'success': True,
             'transcribed_text': transcribed_text,
             'response_text': ai_response,
-            'usage': response.model_extra['estimated_cost'] if 'estimated_cost' in response.model_extra else {},
+            'usage': {
+                'llm': response.model_extra['estimated_cost'] if 'estimated_cost' in response.model_extra else {},
+                'transcript': transcript.model_extra['estimated_cost'] if 'estimated_cost' in transcript.model_extra else {},
+            },
             'audio': f'data:audio/{tts_format};base64,{encoded_audio}'
         })
         
