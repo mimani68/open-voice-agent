@@ -23,7 +23,7 @@ body {
     color: var(--dark-gray);
     height: 100vh;
     display: flex;
-    align-items: center;
+    # align-items: center;
     justify-content: center;
 }
 
