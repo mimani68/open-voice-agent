@@ -12,14 +12,19 @@ load_dotenv()
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", os.urandom(24))
 
+# AI provider
 openai_api_key = os.environ.get("OPENAI_API_KEY", "your-openai-api-key")
 client = OpenAI(api_key=openai_api_key)
 
-# OpenAI TTS configuration
+# Speech to text configurations
+stt_model = os.environ.get("OPENAI_STT_MODEL", "whisper-1")
+
+# TTS configuration
 tts_model = os.environ.get("OPENAI_TTS_MODEL", "tts-1")  # or "tts-1-hd" for higher quality
 tts_voice = os.environ.get("OPENAI_TTS_VOICE", "alloy")  # alloy, echo, fable, onyx, nova, shimmer
 tts_format = os.environ.get("OPENAI_TTS_FORMAT", "mp3")  # mp3, opus, aac, flac
 
+# LLM Configurations
 llm_model=os.environ.get("OPENAI_LLM_MODEL", "gpt-4.1-nano")
 
 def strip_markdown(text):
@@ -75,7 +80,7 @@ def process_audio():
         try:
             with open(temp_audio_path, "rb") as audio_file:
                 transcript = client.audio.transcriptions.create(
-                    model="whisper-1",
+                    model=stt_model,
                     file=audio_file
                 )
         except Exception as e:
@@ -98,7 +103,7 @@ def process_audio():
             
             messages = [{
                 "role": "system", 
-                "content": "You are a helpful, natural, and warm voice assistant designed to answer questions and chat like a trusted friend. Your responses should sound like genuine human conversation - fluent, natural, and engaging. Occasionally show appropriate hesitation or thoughtfulness when processing complex topics, but maintain confidence and helpfulness. Use US English idioms and casual expressions naturally. Keep responses conversational, concise, and focused while moving the dialogue forward smoothly. Responses must be contain informal and general daily chatting. Speech level must be Advanced English C1 and informal idioms and slangs."
+                "content": "You are a helpful, natural, and warm voice assistant designed to answer questions and chat like a trusted friend. Your responses should sound like genuine human conversation - fluent, natural, and engaging. Occasionally show appropriate hesitation or thoughtfulness when processing complex topics, but maintain confidence and helpfulness. Use US English idioms and casual expressions naturally. Keep responses conversational, concise, and focused while moving the dialogue forward smoothly. Responses must be contain informal and general daily chatting. Speech level must be Advanced English C1"
             }]
             messages.extend(conversation_history)
             messages.append({"role": "user", "content": transcribed_text})
