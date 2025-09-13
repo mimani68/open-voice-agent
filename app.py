@@ -26,6 +26,7 @@ tts_format = os.environ.get("OPENAI_TTS_FORMAT", "mp3")  # mp3, opus, aac, flac
 
 # LLM Configurations
 llm_model=os.environ.get("OPENAI_LLM_MODEL", "gpt-4.1-nano")
+llm_context=os.environ.get("CONTEXT_FILE")
 
 def strip_markdown(text):
     text = re.sub(r'```[\s\S]*?```', 'Code block removed for speech.', text)
@@ -41,6 +42,9 @@ def strip_markdown(text):
     text = re.sub(r'^\s*[-*+]\s+', 'Bullet point: ', text, flags=re.MULTILINE)
     text = re.sub(r'^\s*\d+\.\s+', 'Point: ', text, flags=re.MULTILINE)
     return text
+
+def only_english(text: str) -> str:
+    return ''.join(char for char in text if (char.isascii() or char.isalpha()))
 
 @app.route('/')
 def index():
@@ -105,6 +109,12 @@ def process_audio():
                 "role": "system", 
                 "content": "You are a helpful, natural, and warm voice assistant designed to answer questions and chat like a trusted friend. Your responses should sound like genuine human conversation - fluent, natural, and engaging. Occasionally show appropriate hesitation or thoughtfulness when processing complex topics, but maintain confidence and helpfulness. Use US English idioms and casual expressions naturally. Keep responses conversational, concise, and focused while moving the dialogue forward smoothly. Responses must be contain informal and general daily chatting. Speech level must be Advanced English C1"
             }]
+            # Adding static context
+            if llm_context:
+                with open(llm_context, "r") as context_file:
+                    temp = context_file.readlines()
+                    messages.append({"role": "user", "content": f"##English IDIOM and slang dictionary:\n- Use follows English phrases for making conversation\n\n\n-----\n{only_english(temp)}\n---------\n\n"})
+
             messages.extend(conversation_history)
             messages.append({"role": "user", "content": transcribed_text})
 
@@ -156,6 +166,7 @@ def process_audio():
             'success': True,
             'transcribed_text': transcribed_text,
             'response_text': ai_response,
+            'prompt': messages,
             'usage': {
                 'llm': response.model_extra['estimated_cost'] if 'estimated_cost' in response.model_extra else {},
                 'transcript': transcript.model_extra['estimated_cost'] if 'estimated_cost' in transcript.model_extra else {},
