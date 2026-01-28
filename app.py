@@ -28,6 +28,9 @@ tts_format = os.environ.get("OPENAI_TTS_FORMAT", "mp3")  # mp3, opus, aac, flac
 llm_model=os.environ.get("OPENAI_LLM_MODEL", "gpt-4.1-nano")
 llm_context=os.environ.get("CONTEXT_FILE")
 
+# Configuration
+PORT=os.environ.get("PORT", 5000)
+
 def strip_markdown(text):
     text = re.sub(r'```[\s\S]*?```', 'Code block removed for speech.', text)
     text = re.sub(r'`([^`]+)`', r'\1', text)
@@ -189,4 +192,4 @@ def process_audio():
                 print(f"Error removing temporary file: {str(e)}")
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=PORT)
